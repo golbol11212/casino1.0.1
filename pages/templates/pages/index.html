@@ -1,0 +1,147 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block title %}Home - Alkatraz Casino{% endblock %}
+
+{% block content %}
+<section class="hero-v2">
+    <div class="hero-v2-content">
+        <h1 class="hero-v2-title" data-text="ALKATRAZ">ALKATRAZ</h1>
+        <p class="hero-v2-subtitle">Where fortune favors the bold.</p>
+        {% if not user.is_authenticated %}
+        <a href="{% url 'register' %}" class="btn btn-primary btn-lg" data-text="Begin Your Legacy"><span class="btn-text">Begin Your Legacy</span></a>
+        {% endif %}
+    </div>
+</section>
+
+<section class="features-section-v2">
+    <div class="feature-v2-card">
+        <div class="feature-v2-icon">🚀</div>
+        <h3 class="feature-v2-title">Instant Play</h3>
+        <p class="feature-v2-desc">No downloads, no waiting. Just pure, unadulterated fun.</p>
+    </div>
+    <div class="feature-v2-card">
+        <div class="feature-v2-icon">🔒</div>
+        <h3 class="feature-v2-title">Vault-Like Security</h3>
+        <p class="feature-v2-desc">Your digital assets are protected with military-grade encryption.</p>
+    </div>
+    <div class="feature-v2-card">
+        <div class="feature-v2-icon">🎁</div>
+        <h3 class="feature-v2-title">Limitless Rewards</h3>
+        <p class="feature-v2-desc">Daily bonuses, exclusive promotions, and endless rewards.</p>
+    </div>
+</section>
+
+<section class="games-section fade-in">
+    <h2 class="section-title">Featured Games</h2>
+    <div class="games-grid">
+        <div class="game-card">
+            <div class="game-image">
+                <img src="{% static 'img/Гра в Блекджек з кнопками.png' %}" alt="Blackjack">
+            </div>
+            <div class="game-info">
+                <h3 class="game-name">Blackjack</h3>
+                <p class="game-desc">The classic game of 21.</p>
+                <form action="{% url 'track-game-click' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="game_name" value="Blackjack">
+                    <input type="hidden" name="target_url" value="{% url 'Blackjack' %}">
+                    <button type="submit" class="btn btn-primary">Play Now</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-image">
+                <img src="{% static 'img/рулетка.png' %}" alt="Roulette">
+            </div>
+            <div class="game-info">
+                <h3 class="game-name">Roulette</h3>
+                <p class="game-desc">Spin the wheel of fortune.</p>
+                <form action="{% url 'track-game-click' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="game_name" value="roulette">
+                    <input type="hidden" name="target_url" value="{% url 'roulette' %}">
+                    <button type="submit" class="btn btn-primary">Play Now</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-image">
+                <img src="{% static 'img/blingo.jpg' %}" alt="Blingo">
+            </div>
+            <div class="game-info">
+                <h3 class="game-name">Blingo</h3>
+                <p class="game-desc">A themed slot with big bonuses.</p>
+                <form action="{% url 'track-game-click' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="game_name" value="blingo">
+                    <input type="hidden" name="target_url" value="{% url 'blingo' %}">
+                    <button type="submit" class="btn btn-primary">Play Now</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="game-card">
+            <div class="game-image">
+                <img src="{% static 'img/plinko.jpg' %}" alt="Plinko">
+            </div>
+            <div class="game-info">
+                <h3 class="game-name">Plinko</h3>
+                <p class="game-desc">A fast-paced game of chance.</p>
+                <form action="{% url 'track-game-click' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="game_name" value="blinko">
+                    <input type="hidden" name="target_url" value="{% url 'blinko' %}">
+                    <button type="submit" class="btn btn-primary">Play Now</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-image">
+                <img src="{% static 'img/case.jpg' %}" alt="Case Opening">
+            </div>
+            <div class="game-info">
+                <h3 class="game-name">Case Opening</h3>
+                <p class="game-desc">Open cases for prizes.</p>
+                <a href="{% url 'case_silver' %}" class="btn btn-primary">Play Now</a>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-image">
+                <img src="{% static 'img/craps.jpg' %}" alt="Craps">
+            </div>
+            <div class="game-info">
+                <h3 class="game-name">Craps</h3>
+                <p class="game-desc">Roll the dice.</p>
+                <a href="{% url 'craps' %}" class="btn btn-primary">Play Now</a>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-image">
+                <img src="{% static 'img/fortune.jpg' %}" alt="Fortune">
+            </div>
+            <div class="game-info">
+                <h3 class="game-name">Fortune</h3>
+                <p class="game-desc">Spin the reels.</p>
+                <a href="{% url 'fortune' %}" class="btn btn-primary">Play Now</a>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-image">
+                <img src="{% static 'img/punto_banco.jpg' %}" alt="Punto Banco">
+            </div>
+            <div class="game-info">
+                <h3 class="game-name">Punto Banco</h3>
+                <p class="game-desc">A classic card game.</p>
+                <a href="{% url 'punto_banco' %}" class="btn btn-primary">Play Now</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

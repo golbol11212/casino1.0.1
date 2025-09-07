@@ -1,0 +1,251 @@
+.game-container-blackjack {
+    background: radial-gradient(circle, var(--primary) 0%, var(--bg-dark) 100%);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    padding: 40px;
+    text-align: center;
+    max-width: 900px;
+    width: 95%;
+    margin: 40px auto;
+    border: 2px solid var(--accent);
+    position: relative;
+}
+
+.game-container-blackjack h1 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--accent);
+    margin-bottom: 20px;
+    font-size: 3em;
+    text-shadow: 0 0 15px var(--accent);
+}
+
+.balance-info {
+    font-size: 1.4em;
+    margin-bottom: 25px;
+    color: var(--text-light);
+    font-weight: 700;
+}
+
+.balance-info span {
+    color: var(--accent);
+}
+
+.bet-controls {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.bet-btn {
+    background-color: transparent;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+.bet-btn:hover:not(:disabled) {
+    background-color: var(--accent);
+    color: var(--bg-dark);
+    box-shadow: 0 0 15px var(--accent);
+}
+
+.bet-btn:disabled {
+    border-color: #555;
+    color: #555;
+    cursor: not-allowed;
+}
+
+.bet-btn.active {
+    background-color: var(--accent);
+    color: var(--bg-dark);
+    box-shadow: 0 0 20px var(--accent);
+}
+
+.game-area {
+    border: none;
+    border-radius: 15px;
+    padding: 20px;
+    background-color: rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.player-section, .dealer-section {
+    margin-bottom: 15px;
+    padding: 10px;
+}
+
+.player-section h2, .dealer-section h2 {
+    font-family: 'Orbitron', sans-serif;
+}
+
+.card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 15px;
+    min-height: 140px;
+}
+
+.card {
+    width: 90px;
+    height: 130px;
+    background-color: var(--text-light);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 1.6em;
+    font-weight: bold;
+    color: var(--bg-dark);
+    position: relative;
+    margin: 0 8px;
+    border: 2px solid #fff;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.card.red {
+    color: #d63031;
+}
+
+.card.dealt {
+    transform: translateY(0) rotateY(0);
+    opacity: 1;
+}
+
+.card-container .card.hidden-card {
+    background: linear-gradient(45deg, #555, #333);
+    color: transparent;
+}
+
+.card-container .card.hidden-card::after {
+    content: 'A';
+    font-family: 'Orbitron', sans-serif;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3.5em;
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent);
+}
+
+.card.hidden-card .card-content {
+    display: none;
+}
+
+.card.hidden-card.revealed .card-content {
+    display: flex;
+}
+.card.hidden-card.revealed::after {
+    display: none;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+    padding: 8px;
+}
+
+.corner-value {
+    font-size: 0.8em;
+    line-height: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.top-left {
+    align-self: flex-start;
+}
+
+.bottom-right {
+    align-self: flex-end;
+    transform: rotate(180deg);
+}
+
+.center-value {
+    font-size: 2.5em;
+    align-self: center;
+}
+
+.suit {
+    font-size: 0.6em;
+    display: block;
+}
+
+.controls-wrapper {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.game-btn {
+    background-color: var(--accent);
+    color: var(--bg-dark);
+    border: none;
+    border-radius: 25px;
+    padding: 15px 35px;
+    font-size: 1.4em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    margin: 0 10px;
+    text-transform: uppercase;
+}
+
+.game-btn:hover:not(:disabled) {
+    background-color: var(--secondary);
+    color: var(--text-light);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.game-btn:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+}
+
+#message {
+    margin-top: 20px;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--accent);
+    min-height: 35px;
+    text-shadow: 0 0 5px var(--accent);
+}
+#message.win { color: #4CAF50; text-shadow: 0 0 5px #4CAF50; }
+#message.lose { color: #d63031; text-shadow: 0 0 5px #d63031; }
+#message.push { color: #2196F3; text-shadow: 0 0 5px #2196F3; }

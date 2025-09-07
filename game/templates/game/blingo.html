@@ -1,0 +1,39 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block title %}Blingo - Godsait Casino{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'game/css/blingo.css' %}">
+
+<div class="game-container-blingo fade-in">
+    <div class="game-header">
+        <h1>Blingo</h1>
+        <div class="balance-section">
+            Balance: <span id="balanceAmount">{{ request.user.blingo_balance|floatformat:2 }}</span>
+        </div>
+    </div>
+
+    <div class="grid-container" id="gridContainer"></div>
+
+    <div class="info-panel">
+        <div class="lucky-numbers-display">
+            Lucky Numbers: <span id="luckyNumbersDisplay"></span>
+        </div>
+        <div class="message" id="messageDisplay">Click "Start Game" to begin!</div>
+    </div>
+
+    <div class="controls">
+        <button id="startBtn" class="game-btn">Start Game</button>
+        <button id="resetBtn" class="game-btn" disabled>Reset</button>
+    </div>
+</div>
+
+<form id="backForm" method="POST" action="/game/update_redirect/" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="balance" id="balanceInput">
+    <input type="hidden" name="game_name" value="blingo">
+</form>
+
+<script src="{% static 'game/js/blingo.js' %}"></script>
+{% endblock %}

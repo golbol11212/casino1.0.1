@@ -1,0 +1,67 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block title %}Профиль {{ user.username }} - Godsait Casino{% endblock %}
+
+{% block content %}
+<div class="profile-container fade-in">
+    <div class="profile-grid">
+        <div class="profile-sidebar">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">{{ user.username|first|upper }}</div>
+                    <h2 class="profile-username">{{ user.username }}</h2>
+                </div>
+                <ul class="info-list">
+                    <li class="info-item">
+                        <span class="info-label">Баланс:</span>
+                        <span class="info-value">{{ request.session.balance|default:"0" }}</span>
+                    </li>
+                    <li class="info-item">
+                        <span class="info-label">Регистрация:</span>
+                        <span class="info-value">{{ user.date_joined|date:"d.m.Y" }}</span>
+                    </li>
+                    <li class="info-item">
+                        <span class="info-label">Email:</span>
+                        <span class="info-value">{{ user.email|default:"Не указан" }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="profile-main">
+            <div class="profile-card">
+                <h2 class="section-title">История игр</h2>
+                {% if game_history %}
+                <div class="table-responsive">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Игра</th>
+                                <th>Баланс до</th>
+                                <th>Баланс после</th>
+                                <th>Изменение</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for game in game_history %}
+                            <tr>
+                                <td>{{ game.timestamp|date:"d.m.Y H:i" }}</td>
+                                <td>{{ game.game_name }}</td>
+                                <td>{{ game.current_balance }}</td>
+                                <td>{{ game.new_balance }}</td>
+                                <td>{{ game.total }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p>У вас еще нет истории игр.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,3 @@
+- [x] Update styles in `pages/templates/pages/index.html`.
+- [x] Remove inline styles from `h2` tag.
+- [x] Verify the changes.

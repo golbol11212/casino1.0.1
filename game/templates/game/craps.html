@@ -1,0 +1,58 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block title %}Craps Game{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'game/css/craps.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="game-container">
+        <header class="game-header">
+            <h1 class="section-title">Craps</h1>
+        </header>
+
+        <div class="game-stats">
+            <div id="balance-display">Balance: $1000</div>
+            <div id="point-display"></div>
+        </div>
+
+        <div id="dice-container">
+            <div class="dice" id="dice1">
+                <div class="dice-face face-1"><span class="pip"></span></div>
+                <div class="dice-face face-2"><span class="pip"></span><span class="pip"></span></div>
+                <div class="dice-face face-3"><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+                <div class="dice-face face-4"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+                <div class="dice-face face-5"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+                <div class="dice-face face-6"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+            </div>
+            <div class="dice" id="dice2">
+                <div class="dice-face face-1"><span class="pip"></span></div>
+                <div class="dice-face face-2"><span class="pip"></span><span class="pip"></span></div>
+                <div class="dice-face face-3"><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+                <div class="dice-face face-4"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+                <div class="dice-face face-5"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+                <div class="dice-face face-6"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+            </div>
+        </div>
+
+        <div id="message-area">
+            <p>Place your bet to start the game.</p>
+        </div>
+
+        <div class="controls-area">
+            <div id="betting-controls">
+                <input type="number" id="bet-amount" placeholder="Bet Amount" min="1" class="form-control">
+                <button id="place-bet-button" class="btn btn-secondary">Place Bet</button>
+            </div>
+            <button id="roll-button" class="btn btn-primary btn-lg">Roll Dice</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'game/js/craps.js' %}"></script>
+{% endblock %}

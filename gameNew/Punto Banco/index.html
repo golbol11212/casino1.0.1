@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Punto Banco</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Punto Banco (Baccarat)</h1>
+
+    <div id="wallet-container" class="animated-entry">
+        Your Balance: <span id="balance">1000</span>
+    </div>
+
+    <div id="betting-container" class="animated-entry">
+        <h2>Place Your Bet</h2>
+        <input type="number" id="bet-amount" min="1" value="10">
+        <button class="bet-btn" data-bet="player">Bet on Player (Punto)</button>
+        <button class="bet-btn" data-bet="banker">Bet on Banker (Banco)</button>
+        <button class="bet-btn" data-bet="tie">Bet on Tie (Tie)</button>
+    </div>
+
+    <div id="game-table" class="animated-entry">
+        <div class="hand-container">
+            <h2>Player (Punto)</h2>
+            <div id="player-hand" class="hand"></div>
+            <p>Score: <span id="player-score">0</span></p>
+        </div>
+        <div class="hand-container">
+            <h2>Banker (Banco)</h2>
+            <div id="banker-hand" class="hand"></div>
+            <p>Score: <span id="banker-score">0</span></p>
+        </div>
+    </div>
+
+    <div id="message-container">
+        <p id="message">Place your bet to start the game.</p>
+    </div>
+
+    <button id="deal-btn" disabled>Deal</button>
+    <button id="reset-btn" style="display: none;">Play Again</button>
+
+    <script src="script.js"></script>
+</body>
+</html>

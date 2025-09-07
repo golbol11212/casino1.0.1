@@ -1,0 +1,54 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block title %}Блэкджек - Godsait Casino{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'game/css/blackjack.css' %}">
+
+<div class="game-container-blackjack fade-in">
+    <div class="game-header">
+        <h1>Blackjack</h1>
+        <div class="balance-info">
+            Bank: $<span id="bank-amount">{{ user.balance }}</span>
+        </div>
+    </div>
+
+    <div class="game-area">
+        <div class="dealer-section">
+            <h2>Dealer's Hand (<span id="dealer-score">Score: 0</span>)</h2>
+            <div id="dealer-cards" class="card-container"></div>
+        </div>
+
+        <div class="player-section">
+            <h2>Your Hand (<span id="player-score">Score: 0</span>)</h2>
+            <div id="player-cards" class="card-container"></div>
+        </div>
+    </div>
+
+    <p id="message">Place your bet to start a new game.</p>
+
+    <div class="controls-wrapper">
+        <div class="bet-controls">
+            <button class="bet-btn" data-bet="10">$10</button>
+            <button class="bet-btn" data-bet="50">$50</button>
+            <button class="bet-btn" data-bet="100">$100</button>
+            <button class="bet-btn" data-bet="500">$500</button>
+            <button class="bet-btn" data-bet="1000">$1000</button>
+        </div>
+        <div class="controls">
+            <button id="hit-btn" class="game-btn" disabled>Hit</button>
+            <button id="stand-btn" class="game-btn" disabled>Stand</button>
+            <button id="new-game-btn" class="game-btn">New Game</button>
+            <button id="exit-btn" class="game-btn">Exit</button>
+        </div>
+    </div>
+</div>
+
+<form id="back-form" method="post" action="/game/update_redirect/" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="balance" id="balance-input">
+</form>
+
+<script src="{% static 'game/js/blackjack.js' %}?v=1.2"></script>
+{% endblock %}

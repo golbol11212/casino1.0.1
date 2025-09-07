@@ -1,0 +1,249 @@
+:root {
+    --bg-dark: #021c1e;
+    --primary: #004445;
+    --secondary: #2c7873;
+    --accent: #6fb98f;
+    --text-light: #ffffff;
+    --font-body: 'Roboto', sans-serif;
+    --font-header: 'Orbitron', sans-serif;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    overflow-x: hidden;
+    background-image: linear-gradient(45deg, rgba(0, 247, 255, 0.05) 25%, transparent 25%),
+                      linear-gradient(-45deg, rgba(0, 247, 255, 0.05) 25%, transparent 25%),
+                      linear-gradient(45deg, transparent 75%, rgba(0, 247, 255, 0.05) 75%),
+                      linear-gradient(-45deg, transparent 75%, rgba(0, 247, 255, 0.05) 75%);
+    background-size: 20px 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.section-title {
+    font-family: 'Orbitron', sans-serif;
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 50px;
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: var(--bg-dark);
+    box-shadow: 0 0 15px var(--accent);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-lg {
+    padding: 15px 35px;
+    font-size: 1.2em;
+}
+
+.btn-primary:hover {
+    background-color: #5db07d;
+    color: var(--text-light);
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px #5db07d;
+}
+
+.btn-secondary {
+    background-color: var(--secondary);
+    color: var(--text-light);
+}
+
+.btn-secondary:hover {
+    background-color: #1a5f5b;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--bg-dark);
+    border: 2px solid var(--secondary);
+    border-radius: 8px;
+    color: var(--text-light);
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.message {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    font-size: 1.1em;
+}
+
+.message.error {
+    background-color: #e74c3c;
+}
+
+.message.success {
+    background-color: #2ecc71;
+}
+
+/* Craps Game Specific Styles */
+.game-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background: linear-gradient(145deg, rgba(0, 68, 69, 0.6), rgba(2, 28, 30, 0.8));
+    border-radius: 15px;
+    box-shadow: 0 0 35px rgba(111, 185, 143, 0.4);
+    text-align: center;
+}
+
+.game-header {
+    margin-bottom: 20px;
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-family: var(--font-header);
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+#point-display {
+    color: var(--accent);
+    font-size: 1.2em;
+    min-height: 30px;
+}
+
+#dice-container {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin: 40px 0;
+    perspective: 1200px;
+    min-height: 100px;
+}
+
+.dice {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+    transform: rotateX(-30deg) rotateY(35deg);
+}
+
+.dice-face {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background-color: var(--text-light);
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    display: grid;
+    padding: 8px;
+    box-sizing: border-box;
+    backface-visibility: hidden;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+}
+
+.pip {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--bg-dark);
+    align-self: center;
+    justify-self: center;
+}
+
+.face-1 { grid-template-areas: ". . ." ". a ." ". . ."; }
+.face-2 { grid-template-areas: "a . ." ". . ." ". . b"; }
+.face-3 { grid-template-areas: "a . ." ". b ." ". . c"; }
+.face-4 { grid-template-areas: "a . b" ". . ." "c . d"; }
+.face-5 { grid-template-areas: "a . b" ". c ." "d . e"; }
+.face-6 { grid-template-areas: "a . b" "c . d" "e . f"; }
+
+.face-1 .pip:nth-child(1) { grid-area: a; }
+.face-2 .pip:nth-child(1) { grid-area: a; }
+.face-2 .pip:nth-child(2) { grid-area: b; }
+.face-3 .pip:nth-child(1) { grid-area: a; }
+.face-3 .pip:nth-child(2) { grid-area: b; }
+.face-3 .pip:nth-child(3) { grid-area: c; }
+.face-4 .pip:nth-child(1) { grid-area: a; }
+.face-4 .pip:nth-child(2) { grid-area: b; }
+.face-4 .pip:nth-child(3) { grid-area: c; }
+.face-4 .pip:nth-child(4) { grid-area: d; }
+.face-5 .pip:nth-child(1) { grid-area: a; }
+.face-5 .pip:nth-child(2) { grid-area: b; }
+.face-5 .pip:nth-child(3) { grid-area: c; }
+.face-5 .pip:nth-child(4) { grid-area: d; }
+.face-5 .pip:nth-child(5) { grid-area: e; }
+.face-6 .pip:nth-child(1) { grid-area: a; }
+.face-6 .pip:nth-child(2) { grid-area: b; }
+.face-6 .pip:nth-child(3) { grid-area: c; }
+.face-6 .pip:nth-child(4) { grid-area: d; }
+.face-6 .pip:nth-child(5) { grid-area: e; }
+.face-6 .pip:nth-child(6) { grid-area: f; }
+
+.face-1 { transform: rotateY(0deg) translateZ(40px); }
+.face-2 { transform: rotateY(-90deg) translateZ(40px); }
+.face-3 { transform: rotateX(90deg) translateZ(40px); }
+.face-4 { transform: rotateX(-90deg) translateZ(40px); }
+.face-5 { transform: rotateY(90deg) translateZ(40px); }
+.face-6 { transform: rotateY(180deg) translateZ(40px); }
+
+#message-area {
+    min-height: 80px;
+    font-size: 1.2em;
+    padding: 10px;
+}
+
+.controls-area {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+#betting-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+#bet-amount {
+    width: 150px;
+}

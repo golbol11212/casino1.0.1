@@ -1,0 +1,41 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block title %}Plinko - Godsait Casino{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'game/css/blinko.css' %}">
+
+<div class="game-container-blinko fade-in">
+    <div class="game-header">
+        <h1>Plinko</h1>
+        <div class="stats">
+            <div class="balance">Balance: <span id="balance">{{ user.blinko_balance }}</span></div>
+            <div class="score">Total Won: <span id="score">0</span></div>
+        </div>
+    </div>
+    
+    <canvas id="plinkoCanvas" width="500" height="600"></canvas>
+
+    <div class="controls-wrapper">
+        <div class="controls">
+            <label for="bet">Bet:</label>
+            <select id="bet">
+                <option value="1">1</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+            <button id="drop-ball-btn" class="game-btn">🎯 Drop Ball</button>
+        </div>
+        <div id="game-over-controls">
+            <button id="save-and-exit-btn" class="game-btn">Save & Exit</button>
+        </div>
+    </div>
+</div>
+
+<form style="display: none;">{% csrf_token %}</form>
+
+<script src="{% static 'game/js/blinko.js' %}?v=3"></script>
+{% endblock %}

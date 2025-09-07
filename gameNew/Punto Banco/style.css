@@ -1,0 +1,249 @@
+:root {
+    --bg-dark: #021c1e;
+    --primary: #004445;
+    --secondary: #2c7873;
+    --accent: #6fb98f;
+    --text-light: #ffffff;
+    --font-body: 'Roboto', sans-serif;
+    --font-header: 'Orbitron', sans-serif;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    text-align: center;
+    background-image: linear-gradient(45deg, rgba(0, 247, 255, 0.05) 25%, transparent 25%),
+                      linear-gradient(-45deg, rgba(0, 247, 255, 0.05) 25%, transparent 25%),
+                      linear-gradient(45deg, transparent 75%, rgba(0, 247, 255, 0.05) 75%),
+                      linear-gradient(-45deg, transparent 75%, rgba(0, 247, 255, 0.05) 75%);
+    background-size: 20px 20px;
+}
+
+h1, h2 {
+    font-family: var(--font-header);
+    color: var(--accent);
+    text-shadow: 0 0 5px var(--accent);
+}
+
+#game-table {
+    display: flex;
+    justify-content: space-around;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: rgba(0, 68, 69, 0.4);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 20px rgba(111, 185, 143, 0.3);
+    max-width: 1000px;
+}
+
+.hand-container {
+    width: 45%;
+}
+
+.hand {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 150px;
+    gap: 10px;
+}
+
+.card {
+    width: 90px;
+    height: 130px;
+    perspective: 1000px;
+    background-color: transparent;
+    border: none;
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.card.is-flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* Safari */
+    backface-visibility: hidden;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    font-weight: bold;
+    font-family: var(--font-header);
+}
+
+.card-front {
+    background: var(--primary);
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 10px var(--accent), inset 0 0 5px rgba(111, 185, 143, 0.5);
+    text-shadow: 0 0 5px var(--accent);
+    transform: rotateY(180deg);
+}
+
+.card-front.red {
+    color: #ff5a5a; /* A brighter, more neon red */
+    border-color: #ff5a5a;
+    box-shadow: 0 0 10px #ff5a5a, inset 0 0 5px rgba(255, 90, 90, 0.5);
+    text-shadow: 0 0 5px #ff5a5a;
+}
+
+.card-back {
+    background-color: var(--primary);
+    border: 2px solid var(--secondary);
+    background-image: repeating-linear-gradient(
+        45deg,
+        var(--secondary),
+        var(--secondary) 10px,
+        var(--primary) 10px,
+        var(--primary) 20px
+    );
+    box-shadow: 0 0 10px var(--secondary);
+}
+
+/* We don't need the flipIn animation anymore, the flip is handled by a class toggle */
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+#betting-container, #wallet-container, #message-container {
+    margin-bottom: 20px;
+    background: rgba(13, 13, 13, 0.6);
+    backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 20px rgba(0, 247, 255, 0.5);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#wallet-container {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+#balance {
+    color: var(--accent);
+    animation: pulse 2s infinite;
+}
+
+button {
+    background: var(--accent);
+    color: var(--bg-dark);
+    border: none;
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 8px;
+    margin: 5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px var(--accent);
+}
+
+button:hover:not(:disabled) {
+    background-color: #8cdec2;
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px #8cdec2;
+}
+
+button:disabled {
+    background-color: #555;
+    color: #888;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+input[type="number"] {
+    width: 100px;
+    padding: 12px;
+    background-color: var(--bg-dark);
+    border: 2px solid var(--secondary);
+    border-radius: 8px;
+    color: var(--text-light);
+    font-size: 1rem;
+    text-align: center;
+}
+
+input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+#message {
+    font-size: 1.2rem;
+    min-height: 25px;
+}
+
+@keyframes pulse {
+    0% {
+        text-shadow: 0 0 5px var(--accent);
+    }
+    50% {
+        text-shadow: 0 0 15px var(--accent);
+    }
+    100% {
+        text-shadow: 0 0 5px var(--accent);
+    }
+}
+
+/* General Animations */
+.animated-entry {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+}
+
+#betting-container { animation-delay: 0.2s; }
+#game-table { animation-delay: 0.4s; }
+#wallet-container { animation-delay: 0.6s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Score update animation */
+.score-update {
+    animation: pulseScore 0.5s ease-in-out;
+}
+
+@keyframes pulseScore {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.25); color: var(--text-light); }
+    100% { transform: scale(1); }
+}
+
+/* Button click animation */
+button:active:not(:disabled) {
+    transform: translateY(-1px) scale(0.98);
+    box-shadow: 0 0 10px var(--accent);
+}

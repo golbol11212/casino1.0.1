@@ -1,0 +1,40 @@
+{% extends 'pages/game_base.html' %}
+{% load static %}
+
+{% block title %}Bronze Case{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'game/css/case.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main-wrapper theme-bronze">
+    <header class="app-header">
+        <h1>Bronze Case</h1>
+        <div class="header-controls">
+            <div class="balance-container">
+                <h2>Баланс: <span id="balance">10000</span></h2>
+            </div>
+            <button id="exit-btn">Выход</button>
+        </div>
+    </header>
+    <nav class="case-nav">
+        <a href="{% url 'case_bronze' %}" class="active">Bronze Case</a>
+        <a href="{% url 'case_silver' %}">Silver Case</a>
+        <a href="{% url 'case_gold' %}">Gold Case</a>
+    </nav>
+    <div id="cases-area">
+        <!-- Сюда будут добавляться рулетки через JS -->
+    </div>
+    <div class="controls-container">
+        <label for="case-amount">Количество:</label>
+        <input type="number" id="case-amount" value="1" min="1" max="10">
+    </div>
+    <button id="open-case-btn">Открыть кейс</button>
+    <div id="total-winnings-text"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'game/js/case_bronze.js' %}"></script>
+{% endblock %}
