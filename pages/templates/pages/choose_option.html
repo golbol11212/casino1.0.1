@@ -1,0 +1,28 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block title %}Choose Option - Alkatraz Casino{% endblock %}
+
+{% block content %}
+<section class="hero-v2">
+    <div class="hero-v2-content">
+        <h1 class="hero-v2-title" data-text="ПІДТРИМАЙТЕ НАС">ПІДТРИМАЙТЕ НАС</h1>
+        <p class="hero-v2-subtitle">Оберіть, як ви хочете підтримати проект.</p>
+    </div>
+</section>
+
+<section class="features-section-v2">
+    <div class="feature-v2-card">
+        <div class="feature-v2-icon">📺</div>
+        <h3 class="feature-v2-title">Переглянути рекламу</h3>
+        <p class="feature-v2-desc">Допоможіть нам, переглядаючи короткі рекламні ролики. Це безкоштовно і займає лише кілька секунд!</p>
+        <a href="{% url 'watch-ads' %}" class="btn btn-primary">Переглянути рекламу</a>
+    </div>
+    <div class="feature-v2-card">
+        <div class="feature-v2-icon">💖</div>
+        <h3 class="feature-v2-title">Зробити донат</h3>
+        <p class="feature-v2-desc">Підтримайте нас фінансово, щоб ми могли продовжувати розвивати проект та додавати новий контент.</p>
+        <a href="{% url 'payment-options' %}" class="btn btn-primary">Зробити донат</a>
+    </div>
+</section>
+{% endblock %}

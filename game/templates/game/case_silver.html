@@ -1,23 +1,14 @@
-{% extends 'pages/game_base.html' %}
+{% extends 'pages/base.html' %}
 {% load static %}
 
 {% block title %}Silver Case{% endblock %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{% static 'game/css/case.css' %}">
+    <link rel="stylesheet" href="{% static 'game/css/case.css' %}?v={% now "U" %}">
 {% endblock %}
 
 {% block content %}
 <div class="main-wrapper theme-silver">
-    <header class="app-header">
-        <h1>Silver Case</h1>
-        <div class="header-controls">
-            <div class="balance-container">
-                <h2>Баланс: <span id="balance">10000</span></h2>
-            </div>
-            <button id="exit-btn">Выход</button>
-        </div>
-    </header>
     <nav class="case-nav">
         <a href="{% url 'case_bronze' %}">Bronze Case</a>
         <a href="{% url 'case_silver' %}" class="active">Silver Case</a>
@@ -36,5 +27,5 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="{% static 'game/js/case.js' %}"></script>
+    <script src="{% static 'game/js/case.js' %}?v={% now "U" %}"></script>
 {% endblock %}

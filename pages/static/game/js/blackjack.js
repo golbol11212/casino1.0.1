@@ -8,6 +8,11 @@ let gameOver = true;
 let currentBet = 0;
 let bankAmount = parseInt(document.getElementById('bank-amount').textContent) || 1000;
 
+// Сохраняем баланс при уходе со страницы
+window.addEventListener('beforeunload', () => {
+    updateBalanceOnServer(bankAmount);
+});
+
 // DOM элементы
 const dealerCardsEl = document.getElementById('dealer-cards');
 const playerCardsEl = document.getElementById('player-cards');
@@ -182,7 +187,7 @@ function updateDisplay() {
 
 function updateBank() {
     bankAmountEl.textContent = bankAmount;
-    document.getElementById('balance-input').value = bankAmount;
+    updateBalanceOnServer(bankAmount);
 }
 
 function revealDealerCards() {
@@ -373,48 +378,53 @@ updateBank();
 updateBetButtons(); 
 messageEl.textContent = 'Сделайте вашу ставку, чтобы начать Новую игру.';
 
-document.addEventListener('DOMContentLoaded', () => {
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    const exitBtn = document.getElementById('exit-btn');
-
-    async function submitBalanceAndExit() {
-        const form = document.getElementById('back-form');
-        const balanceInput = document.getElementById('balance-input');
-        balanceInput.value = bankAmount;
-
-        const formData = new FormData(form);
-
-        try {
-            const response = await fetch(form.action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrfToken,
-                },
-                body: formData
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`Ошибка HTTP: ${response.status} - ${errorData.message || 'Неизвестная ошибка'}`);
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
             }
-
-            const data = await response.json();
-
-            if (data.status === 'success') {
-                if (data.redirect_url) {
-                    window.location.href = data.redirect_url;
-                }
-            } else {
-                alert('Ошибка при сохранении баланса: ' + data.message);
-            }
-        } catch (error) {
-            alert('Произошла критическая ошибка: ' + error.message);
         }
     }
+    return cookieValue;
+}
+
+async function updateBalanceOnServer(newBalance) {
+    try {
+        const response = await fetch('/game/update_blackjack_balance/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ balance: newBalance })
+        });
+        const data = await response.json();
+        if (data.status === 'success') {
+            console.log('Баланс успешно обновлен на сервере:', data.new_balance);
+            const headerBalanceElement = document.querySelector('.balance-amount');
+            if (headerBalanceElement) {
+                headerBalanceElement.innerText = data.new_balance.toLocaleString("en-GB");
+            }
+        } else {
+            console.error('Ошибка при обновлении баланса на сервере:', data.message);
+        }
+    } catch (error) {
+        console.error('Ошибка сети при обновлении баланса:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const exitBtn = document.getElementById('exit-btn');
 
     if (exitBtn) {
         exitBtn.addEventListener('click', () => {
-            submitBalanceAndExit();
+            updateBalanceOnServer(bankAmount);
+            window.location.href = "/";
         });
     }
 });

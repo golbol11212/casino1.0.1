@@ -1,0 +1,34 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block title %}Payment Options - Alkatraz Casino{% endblock %}
+
+{% block content %}
+<section class="hero-v2">
+    <div class="hero-v2-content">
+        <h1 class="hero-v2-title" data-text="СПОСОБИ ОПЛАТИ">СПОСОБИ ОПЛАТИ</h1>
+        <p class="hero-v2-subtitle">Оберіть зручний спосіб для донату.</p>
+    </div>
+</section>
+
+<section class="features-section-v2">
+    <div class="feature-v2-card">
+        <div class="feature-v2-icon">💳</div>
+        <h3 class="feature-v2-title">Кредитна/Дебетова картка</h3>
+        <p class="feature-v2-desc">Здійсніть безпечний донат за допомогою вашої банківської картки.</p>
+        <a href="{% url 'card-payment' %}" class="btn btn-primary">Донат карткою</a>
+    </div>
+    <div class="feature-v2-card">
+        <div class="feature-v2-icon">💰</div>
+        <h3 class="feature-v2-title">Криптовалюта</h3>
+        <p class="feature-v2-desc">Підтримайте нас за допомогою криптовалют (Bitcoin, Ethereum тощо).</p>
+        <a href="{% url 'crypto-payment' %}" class="btn btn-primary">Донат криптою</a>
+    </div>
+    <div class="feature-v2-card">
+        <div class="feature-v2-icon">📱</div>
+        <h3 class="feature-v2-title">Мобільні платежі</h3>
+        <p class="feature-v2-desc">Зручні платежі через мобільні додатки та сервіси.</p>
+        <a href="{% url 'mobile-payment' %}" class="btn btn-primary">Мобільний донат</a>
+    </div>
+</section>
+{% endblock %}

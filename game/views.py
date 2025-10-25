@@ -340,32 +340,181 @@ def reset_blinko_attempts(request):
 
 @csrf_exempt
 @login_required
+def update_blackjack_balance(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            balance_str = data.get('balance')
+            
+            if not balance_str:
+                return JsonResponse({'status': 'error', 'message': 'Balance parameter is required'}, status=400)
+            
+            new_balance = Decimal(str(balance_str))
+            game_click_id = request.session.get('last_game_click_id')
+            
+            updated_successfully = False
+            message = 'Ошибка: Не удалось обновить баланс.'
+            new_balance_value = None
+
+            if game_click_id:
+                try:
+                    game_click = GameClick.objects.get(id=game_click_id, user=request.user)
+                    request.user.balance = new_balance
+                    request.user.save()
+                    
+                    request.session['balance'] = float(new_balance)
+                    request.session.modified = True
+
+                    game_click.new_balance = new_balance
+                    game_click.total = new_balance - game_click.current_balance
+                    game_click.save()
+
+                    del request.session['last_game_click_id']
+                    if 'last_game_name' in request.session:
+                        del request.session['last_game_name']
+                    request.session.modified = True
+
+                    updated_successfully = True
+                    message = f'Баланс для {game_click.game_name} обновлен.'
+                    new_balance_value = float(new_balance)
+
+                except GameClick.DoesNotExist:
+                    message = 'GameClick не найден, но баланс мог быть обновлен.'
+                except (ValueError, AttributeError) as e:
+                    message = f"Ошибка при обновлении баланса: {str(e)}"
+            
+            if not updated_successfully:
+                try:
+                    request.user.balance = new_balance
+                    request.user.save()
+                    updated_successfully = True
+                    message = 'Баланс пользователя обновлен (без GameClick).'
+                    new_balance_value = float(new_balance)
+                    
+                    request.session['balance'] = float(new_balance)
+                    request.session.modified = True
+                    
+                except (ValueError, AttributeError) as e:
+                    message = f"Ошибка при обновлении баланса пользователя: {str(e)}"
+
+            if updated_successfully:
+                return JsonResponse({
+                    'status': 'success',
+                    'message': message,
+                    'new_balance': new_balance_value
+                })
+            else:
+                return JsonResponse({'status': 'error', 'message': message}, status=400)
+                
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    
+    return JsonResponse({'status': 'error', 'message': 'Only POST requests are allowed'}, status=405)
+
+@csrf_exempt
+@login_required
 def update_roulette_balance(request):
     if request.method == 'POST':
         try:
-            print(f"[{timezone.now()}] update_roulette_balance: Получен POST запрос.")
             data = json.loads(request.body)
             balance_str = data.get('balance')
-            print(f"[{timezone.now()}] update_roulette_balance: Получен баланс из JS: {balance_str}")
-
+            
+            if not balance_str:
+                return JsonResponse({'status': 'error', 'message': 'Balance parameter is required'}, status=400)
+            
             new_balance = Decimal(str(balance_str))
-            print(f"[{timezone.now()}] update_roulette_balance: Преобразованный баланс: {new_balance}")
+            game_click_id = request.session.get('last_game_click_id')
+            game_name_from_post = data.get('game_name', 'roulette')  # по умолчанию roulette
             
-            old_balance = request.user.balance
-            request.user.balance = new_balance
-            request.user.save()
-            print(f"[{timezone.now()}] update_roulette_balance: Баланс пользователя обновлен в БД с {old_balance} на {new_balance}.")
+            updated_successfully = False
+            message = 'Ошибка: Не удалось обновить баланс.'
+            new_balance_value = None
+
+            # Логика с GameClick (как в update_redirect)
+            if game_click_id and balance_str is not None:
+                try:
+                    game_click = GameClick.objects.get(id=game_click_id, user=request.user)
+                    new_user_balance = new_balance
+
+                    if game_click.game_name == 'blingo':
+                        # Calculate the winnings
+                        winnings = new_user_balance - game_click.current_balance
+                        # Add winnings to the main balance
+                        request.user.balance += winnings
+                        # Update the blingo_balance to the new value after the game
+                        request.user.blingo_balance = new_user_balance
+                        request.session['blingo_balance'] = float(new_user_balance)
+                        request.session['balance'] = float(request.user.balance)
+                    else:
+                        # Для рулетки и других игр
+                        request.user.balance = new_user_balance
+                        request.session['balance'] = float(new_user_balance)
+                    
+                    request.user.save()
+                    request.session.modified = True
+
+                    # Обновляем GameClick
+                    game_click.new_balance = new_user_balance
+                    game_click.total = new_user_balance - game_click.current_balance
+                    game_click.save()
+
+                    # Очищаем сессию
+                    del request.session['last_game_click_id']
+                    if 'last_game_name' in request.session:
+                        del request.session['last_game_name']
+                    request.session.modified = True
+
+                    updated_successfully = True
+                    message = f'Баланс для {game_click.game_name} обновлен.'
+                    new_balance_value = float(new_user_balance)
+
+                    if game_click.game_name == 'blingo' and 'blingo_attempt_counted' in request.session:
+                        del request.session['blingo_attempt_counted']
+                        request.session.modified = True
+
+                except GameClick.DoesNotExist:
+                    message = 'GameClick не найден, но баланс мог быть обновлен.'
+                    # Fallback логика ниже
+                except (ValueError, AttributeError) as e:
+                    message = f"Ошибка при обновлении баланса: {str(e)}"
             
-            request.session['balance'] = float(new_balance)
-            request.session.modified = True
-            print(f"[{timezone.now()}] update_roulette_balance: Баланс в сессии обновлен: {request.session['balance']}")
-            
-            return JsonResponse({'status': 'success', 'new_balance': float(new_balance)})
+            # Fallback логика если GameClick не найден
+            if not updated_successfully and balance_str is not None:
+                try:
+                    new_user_balance = new_balance
+                    if game_name_from_post == 'blingo':
+                        request.user.blingo_balance = new_user_balance
+                    else:
+                        request.user.balance = new_user_balance
+                    request.user.save()
+                    updated_successfully = True
+                    message = f'Баланс пользователя обновлен (без GameClick). Имя игры: {game_name_from_post}.'
+                    new_balance_value = float(new_user_balance)
+                    
+                    # Обновляем сессию
+                    request.session['balance'] = float(new_user_balance)
+                    request.session.modified = True
+                    
+                except (ValueError, AttributeError) as e:
+                    message = f"Ошибка при обновлении баланса пользователя: {str(e)}"
+
+            if updated_successfully:
+                return JsonResponse({
+                    'status': 'success',
+                    'message': message,
+                    'new_balance': new_balance_value
+                })
+            else:
+                return JsonResponse({'status': 'error', 'message': message}, status=400)
+                
         except json.JSONDecodeError:
-            print(f"[{timezone.now()}] update_roulette_balance: Ошибка JSONDecodeError: Invalid JSON")
             return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
         except Exception as e:
-            print(f"[{timezone.now()}] update_roulette_balance: Неизвестная ошибка: {str(e)}")
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
-    print(f"[{timezone.now()}] update_roulette_balance: Получен не POST запрос.")
+    
     return JsonResponse({'status': 'error', 'message': 'Only POST requests are allowed'}, status=405)
+
+
+

@@ -1,16 +1,16 @@
-{% extends 'pages/game_base.html' %}
+{% extends 'pages/base.html' %}
 {% load static %}
 
-{% block title %}Slot Machine{% endblock %}
+{% block title %}Slot Machine "Fortune"{% endblock %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{% static 'game/css/fortune.css' %}">
-    <link rel="stylesheet" href="{% static 'game/css/fortune_extra.css' %}">
+    <link rel="stylesheet" href="{% static 'game/css/fortune.css' %}?v={% now "U" %}">
+    <link rel="stylesheet" href="{% static 'game/css/fortune_extra.css' %}?v={% now "U" %}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="fortune-container">
     <h1>Casino "Fortune"</h1>
     <div class="player-stats">
         <div class="balance">Balance: <span id="balance-amount">100</span></div>
@@ -43,5 +43,5 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="{% static 'game/js/fortune.js' %}"></script>
+    <script src="{% static 'game/js/fortune.js' %}?v={% now "U" %}"></script>
 {% endblock %}

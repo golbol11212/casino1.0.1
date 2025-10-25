@@ -1,0 +1,46 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block title %}Watch Ads - Alkatraz Casino{% endblock %}
+
+{% block content %}
+<section class="hero-v2">
+    <div class="hero-v2-content">
+        <h1 class="hero-v2-title" data-text="ПЕРЕГЛЯД РЕКЛАМИ">ПЕРЕГЛЯД РЕКЛАМИ</h1>
+        <p class="hero-v2-subtitle">Оберіть кількість реклам для перегляду та отримайте монети.</p>
+    </div>
+</section>
+
+<section class="auth-container">
+    <div class="auth-form-container">
+        <div class="auth-header">
+            <h2 class="auth-title">Перегляд реклами</h2>
+            <p class="auth-subtitle">1 реклама = 100 монет.</p>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="num_ads" data-text="Кількість реклам">Кількість реклам</label>
+                <select id="num_ads" name="num_ads" class="form-control" required>
+                    <option value="1">1 реклама (100 монет)</option>
+                    <option value="2">2 реклами (200 монет)</option>
+                    <option value="3">3 реклами (300 монет)</option>
+                    <option value="5">5 реклам (500 монет)</option>
+                </select>
+            </div>
+            <div class="ad-container" style="margin-top: 20px;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-YOUR_ADSENSE_PUBLISHER_ID"
+                     data-ad-slot="YOUR_ADSENSE_AD_SLOT_ID_3"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block submit-btn" data-text="Переглянути"><span class="btn-text">Переглянути</span></button>
+        </form>
+    </div>
+</section>
+{% endblock %}

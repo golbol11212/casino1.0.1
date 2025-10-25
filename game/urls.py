@@ -27,4 +27,5 @@ urlpatterns = [
     path('save-blinko-score/', views.save_blinko_score, name='save_blinko_score'),
     path('reset-blinko/', views.reset_blinko_attempts, name='reset_blinko_attempts'), # URL для сброса попыток
     path('update_roulette_balance/', views.update_roulette_balance, name='update_roulette_balance'),
+    path('update_blackjack_balance/', views.update_blackjack_balance, name='update_blackjack_balance'),
 ]

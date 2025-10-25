@@ -1,0 +1,44 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block title %}Crypto Payment - Alkatraz Casino{% endblock %}
+
+{% block content %}
+<section class="hero-v2">
+    <div class="hero-v2-content">
+        <h1 class="hero-v2-title" data-text="ДОНАТ КРИПТОВАЛЮТОЮ">ДОНАТ КРИПТОВАЛЮТОЮ</h1>
+        <p class="hero-v2-subtitle">Підтримайте нас за допомогою криптовалют.</p>
+    </div>
+</section>
+
+<section class="auth-container">
+    <div class="auth-form-container">
+        <div class="auth-header">
+            <h2 class="auth-title">Донат криптою</h2>
+            <p class="auth-subtitle">Оберіть криптовалюту та введіть суму.</p>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="crypto_currency" data-text="Оберіть криптовалюту">Оберіть криптовалюту</label>
+                <select id="crypto_currency" name="crypto_currency" class="form-control" required>
+                    <option value="" disabled selected>Оберіть...</option>
+                    <option value="BTC">Bitcoin (BTC)</option>
+                    <option value="ETH">Ethereum (ETH)</option>
+                    <option value="USDT">Tether (USDT)</option>
+                    <option value="LTC">Litecoin (LTC)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="number" id="amount" name="amount" class="form-control" placeholder=" " required min="0.000001" step="0.000001" title="Будь ласка, введіть суму донату">
+                <label for="amount" data-text="Сума донату">Сума донату</label>
+            </div>
+            <div class="form-group">
+                <p class="auth-subtitle">Адреса для переказу: <span class="text-accent">bc1q...</span></p>
+                <p class="auth-subtitle">Будь ласка, перекажіть точну суму на вказану адресу.</p>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block submit-btn" data-text="Зробити донат"><span class="btn-text">Зробити донат</span></button>
+        </form>
+    </div>
+</section>
+{% endblock %}

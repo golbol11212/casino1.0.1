@@ -1,0 +1,42 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block title %}Card Payment - Alkatraz Casino{% endblock %}
+
+{% block content %}
+<section class="hero-v2">
+    <div class="hero-v2-content">
+        <h1 class="hero-v2-title" data-text="ОПЛАТА КАРТКОЮ">ОПЛАТА КАРТКОЮ</h1>
+        <p class="hero-v2-subtitle">Введіть дані вашої картки для донату.</p>
+    </div>
+</section>
+
+<section class="auth-container">
+    <div class="auth-form-container">
+        <div class="auth-header">
+            <h2 class="auth-title">Донат карткою</h2>
+            <p class="auth-subtitle">Будь ласка, введіть дані вашої картки.</p>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" id="card_number" name="card_number" class="form-control" placeholder=" " required pattern="[0-9]{16}" title="Будь ласка, введіть 16 цифр номера картки">
+                <label for="card_number" data-text="Номер картки">Номер картки</label>
+            </div>
+            <div class="form-group">
+                <input type="text" id="expiry_date" name="expiry_date" class="form-control" placeholder=" " required pattern="(0[1-9]|1[0-2])\/[0-9]{2}" title="Будь ласка, введіть термін дії у форматі ММ/РР">
+                <label for="expiry_date" data-text="Термін дії (ММ/РР)">Термін дії (ММ/РР)</label>
+            </div>
+            <div class="form-group">
+                <input type="text" id="cvv" name="cvv" class="form-control" placeholder=" " required pattern="[0-9]{3,4}" title="Будь ласка, введіть 3 або 4 цифри CVV">
+                <label for="cvv" data-text="CVV">CVV</label>
+            </div>
+            <div class="form-group">
+                <input type="number" id="amount" name="amount" class="form-control" placeholder=" " required min="1" step="0.01" title="Будь ласка, введіть суму донату">
+                <label for="amount" data-text="Сума донату">Сума донату</label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block submit-btn" data-text="Зробити донат"><span class="btn-text">Зробити донат</span></button>
+        </form>
+    </div>
+</section>
+{% endblock %}

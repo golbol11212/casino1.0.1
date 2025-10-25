@@ -13,6 +13,27 @@ def home_page(request):
 def about_page(request):
     return render(request, 'pages/about.html')
 
+def ads_info_page(request):
+    return render(request, 'pages/ads_info.html')
+
+def choose_option_page(request):
+    return render(request, 'pages/choose_option.html')
+
+def payment_options_page(request):
+    return render(request, 'pages/payment_options.html')
+
+def card_payment_page(request):
+    return render(request, 'pages/card_payment.html')
+
+def crypto_payment_page(request):
+    return render(request, 'pages/crypto_payment.html')
+
+def mobile_payment_page(request):
+    return render(request, 'pages/mobile_payment.html')
+
+def watch_ads_page(request):
+    return render(request, 'pages/watch_ads.html')
+
 @csrf_protect # Используем декоратор для POST запросов
 def track_game_click(request):
     if request.method == 'POST':

@@ -2,9 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const openCaseBtn = document.getElementById('open-case-btn');
     const casesArea = document.getElementById('cases-area');
     const totalWinningsText = document.getElementById('total-winnings-text');
-    const balanceSpan = document.getElementById('balance');
+    const balanceSpan = document.getElementById('balance'); // This will be null, but we'll handle it
     const caseAmountInput = document.getElementById('case-amount');
-    const exitBtn = document.getElementById('exit-btn');
+    const exitBtn = document.getElementById('exit-btn'); // This will be null
 
     let balance = 10000;
     const caseCost = 500;
@@ -26,7 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const amount = parseInt(caseAmountInput.value, 10) || 1;
         const totalCost = caseCost * amount;
 
-        balanceSpan.textContent = balance;
+        if (balanceSpan) {
+            balanceSpan.textContent = balance;
+        }
         openCaseBtn.textContent = `Открыть ${amount} кейс(-а) (${totalCost} очков)`;
 
         openCaseBtn.disabled = isOpening || balance < totalCost;
@@ -128,9 +130,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     caseAmountInput.addEventListener('input', updateUI);
 
-    exitBtn.addEventListener('click', () => {
-        window.close();
-    });
+    if (exitBtn) {
+        exitBtn.addEventListener('click', () => {
+            // Redirect to home page instead of closing the window
+            window.location.href = '/';
+        });
+    }
 
     window.addEventListener('storage', (event) => {
         if (event.key === 'caseBalance') {

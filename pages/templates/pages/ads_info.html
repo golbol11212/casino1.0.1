@@ -1,0 +1,68 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block title %}Ads & Info - Alkatraz Casino{% endblock %}
+
+{% block content %}
+<section class="hero-v2">
+    <div class="hero-v2-content">
+        <h1 class="hero-v2-title" data-text="ADS & INFO">ADS & INFO</h1>
+        <p class="hero-v2-subtitle">Підтримайте проект або дізнайтеся більше.</p>
+    </div>
+</section>
+
+<section class="features-section-v2">
+    <div class="feature-v2-card">
+        <div class="feature-v2-icon">💡</div>
+        <h3 class="feature-v2-title">Про проект</h3>
+        <p class="feature-v2-desc">Alkatraz Casino - це ваш портал у світ захоплюючих ігор та неперевершених розваг. Ми прагнемо створити безпечне та чесне середовище для всіх наших гравців, пропонуючи широкий вибір ігор, від класичних карткових до сучасних слотів.</p>
+    </div>
+    <div class="feature-v2-card">
+        <div class="feature-v2-icon">🎯</div>
+        <h3 class="feature-v2-title">Наша місія</h3>
+        <p class="feature-v2-desc">Наша місія - забезпечити найкращий ігровий досвід, постійно вдосконалюючи наші ігри та сервіси. Ми цінуємо кожного гравця та прагнемо перевершити ваші очікування.</p>
+    </div>
+    <div class="feature-v2-card">
+        <div class="feature-v2-icon">🤝</div>
+        <h3 class="feature-v2-title">Підтримка</h3>
+        <p class="feature-v2-desc">Ваша підтримка допомагає нам розвиватися та додавати нові ігри. Ви можете підтримати нас, переглядаючи рекламу або зробивши донат.</p>
+    </div>
+</section>
+
+<section class="games-section fade-in">
+    <h2 class="section-title">Рекламні пропозиції</h2>
+    <div class="games-grid">
+        <div class="game-card">
+            <div class="game-info">
+                <h3 class="game-name">Рекламний блок 1</h3>
+                <p class="game-desc">Тут буде відображатися реклама Google AdSense.</p>
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-YOUR_ADSENSE_PUBLISHER_ID"
+                     data-ad-slot="YOUR_ADSENSE_AD_SLOT_ID_1"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-info">
+                <h3 class="game-name">Рекламний блок 2</h3>
+                <p class="game-desc">Тут буде відображатися реклама Google AdSense.</p>
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-YOUR_ADSENSE_PUBLISHER_ID"
+                     data-ad-slot="YOUR_ADSENSE_AD_SLOT_ID_2"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

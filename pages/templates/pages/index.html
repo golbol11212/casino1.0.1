@@ -37,7 +37,7 @@
     <div class="games-grid">
         <div class="game-card">
             <div class="game-image">
-                <img src="{% static 'img/Гра в Блекджек з кнопками.png' %}" alt="Blackjack">
+                <img src="{% static 'img/blackjack_buttons.png' %}" alt="Blackjack">
             </div>
             <div class="game-info">
                 <h3 class="game-name">Blackjack</h3>
@@ -53,7 +53,7 @@
 
         <div class="game-card">
             <div class="game-image">
-                <img src="{% static 'img/рулетка.png' %}" alt="Roulette">
+                <img src="{% static 'img/roulette_wheel.png' %}" alt="Roulette">
             </div>
             <div class="game-info">
                 <h3 class="game-name">Roulette</h3>
@@ -67,6 +67,78 @@
             </div>
         </div>
 
+
+        <div class="game-card">
+            <div class="game-image">
+                <img src="{% static 'img/case.jpg' %}" alt="Case Opening">
+            </div>
+            <div class="game-info">
+                <h3 class="game-name">Case Opening</h3>
+                <p class="game-desc">Open cases for prizes.</p>
+                <form action="{% url 'track-game-click' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="game_name" value="case_opening">
+                    <input type="hidden" name="target_url" value="{% url 'case_silver' %}">
+                    <button type="submit" class="btn btn-primary">Play Now</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-image">
+                <img src="{% static 'img/craps.jpg' %}" alt="Craps">
+            </div>
+            <div class="game-info">
+                <h3 class="game-name">Craps</h3>
+                <p class="game-desc">Roll the dice.</p>
+                <form action="{% url 'track-game-click' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="game_name" value="craps">
+                    <input type="hidden" name="target_url" value="{% url 'craps' %}">
+                    <button type="submit" class="btn btn-primary">Play Now</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-image">
+                <img src="{% static 'img/fortune.jpg' %}" alt="Fortune">
+            </div>
+            <div class="game-info">
+                <h3 class="game-name">Fortune</h3>
+                <p class="game-desc">Spin the reels.</p>
+                <form action="{% url 'track-game-click' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="game_name" value="fortune">
+                    <input type="hidden" name="target_url" value="{% url 'fortune' %}">
+                    <button type="submit" class="btn btn-primary">Play Now</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-image">
+                <img src="{% static 'img/punto_banco.jpg' %}" alt="Punto Banco">
+            </div>
+            <div class="game-info">
+                <h3 class="game-name">Punto Banco</h3>
+                <p class="game-desc">A classic card game.</p>
+                <form action="{% url 'track-game-click' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="game_name" value="punto_banco">
+                    <input type="hidden" name="target_url" value="{% url 'punto_banco' %}">
+                    <button type="submit" class="btn btn-primary">Play Now</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bonus-games-section fade-in">
+    <img src="{% static 'img/coin.png' %}" alt="" class="bonus-section-bg-image">
+    <h2 class="section-title">Bonus Games</h2>
+    <p class="section-subtitle">Try your luck in these special high-reward games!</p>
+    <div class="bonus-games-container">
         <div class="game-card">
             <div class="game-image">
                 <img src="{% static 'img/blingo.jpg' %}" alt="Blingo">
@@ -92,54 +164,10 @@
                 <p class="game-desc">A fast-paced game of chance.</p>
                 <form action="{% url 'track-game-click' %}" method="post">
                     {% csrf_token %}
-                    <input type="hidden" name="game_name" value="blinko">
+                    <input type="hidden" name="game_name" value="plinko">
                     <input type="hidden" name="target_url" value="{% url 'blinko' %}">
                     <button type="submit" class="btn btn-primary">Play Now</button>
                 </form>
-            </div>
-        </div>
-
-        <div class="game-card">
-            <div class="game-image">
-                <img src="{% static 'img/case.jpg' %}" alt="Case Opening">
-            </div>
-            <div class="game-info">
-                <h3 class="game-name">Case Opening</h3>
-                <p class="game-desc">Open cases for prizes.</p>
-                <a href="{% url 'case_silver' %}" class="btn btn-primary">Play Now</a>
-            </div>
-        </div>
-
-        <div class="game-card">
-            <div class="game-image">
-                <img src="{% static 'img/craps.jpg' %}" alt="Craps">
-            </div>
-            <div class="game-info">
-                <h3 class="game-name">Craps</h3>
-                <p class="game-desc">Roll the dice.</p>
-                <a href="{% url 'craps' %}" class="btn btn-primary">Play Now</a>
-            </div>
-        </div>
-
-        <div class="game-card">
-            <div class="game-image">
-                <img src="{% static 'img/fortune.jpg' %}" alt="Fortune">
-            </div>
-            <div class="game-info">
-                <h3 class="game-name">Fortune</h3>
-                <p class="game-desc">Spin the reels.</p>
-                <a href="{% url 'fortune' %}" class="btn btn-primary">Play Now</a>
-            </div>
-        </div>
-
-        <div class="game-card">
-            <div class="game-image">
-                <img src="{% static 'img/punto_banco.jpg' %}" alt="Punto Banco">
-            </div>
-            <div class="game-info">
-                <h3 class="game-name">Punto Banco</h3>
-                <p class="game-desc">A classic card game.</p>
-                <a href="{% url 'punto_banco' %}" class="btn btn-primary">Play Now</a>
             </div>
         </div>
     </div>

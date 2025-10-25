@@ -18,3 +18,7 @@
         <div id="initial-balance" data-balance="{{ request.session.balance|default:'0' }}" style="display: none;"></div>
     </div>
 {% endblock %}
+<form id="back-form" method="post" action="/game/update_redirect/" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="balance" id="balance-input">
+</form>
