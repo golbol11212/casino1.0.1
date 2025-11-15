@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="main-wrapper theme-gold">
+<div class="main-wrapper theme-gold" data-case-type="gold" data-case-cost="2000.00">
     <nav class="case-nav">
         <a href="{% url 'case_bronze' %}">Bronze Case</a>
         <a href="{% url 'case_silver' %}">Silver Case</a>
@@ -16,6 +16,9 @@
     </nav>
     <div id="cases-area">
         <!-- Сюда будут добавляться рулетки через JS -->
+    </div>
+    <div class="balance-info">
+        <p>Основной баланс: <span id="main-balance">0.00</span></p>
     </div>
     <div class="controls-container">
         <label for="case-amount">Количество:</label>
@@ -27,5 +30,5 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="{% static 'game/js/case_gold.js' %}?v={% now "U" %}"></script>
+    <script src="{% static 'game/js/case.js' %}?v={% now "U" %}"></script>
 {% endblock %}

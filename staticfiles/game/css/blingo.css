@@ -1,0 +1,137 @@
+.game-container-blingo {
+    background: radial-gradient(circle, var(--primary) 0%, var(--bg-dark) 100%);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    width: 90%;
+    max-width: 600px;
+    margin: 40px auto;
+    border: 2px solid var(--accent);
+}
+
+.game-container-blingo h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--accent);
+    font-size: 3em;
+    text-shadow: 0 0 15px var(--accent);
+}
+
+.balance-section {
+    margin-bottom: 25px;
+    font-size: 1.4em;
+    color: var(--text-light);
+    font-weight: 700;
+}
+
+.balance-section span {
+    color: var(--accent);
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.cell {
+    width: 80px;
+    height: 80px;
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+    border: 2px solid var(--secondary);
+    color: var(--text-light);
+}
+
+.cell.revealed {
+    background-color: var(--secondary);
+    cursor: default;
+    pointer-events: none;
+    transform: scale(0.95);
+}
+
+.cell.lucky {
+    background-color: var(--accent);
+    box-shadow: 0 0 20px var(--accent);
+}
+
+.cell.unlucky {
+    background-color: #444;
+}
+
+.cell:not(.revealed):hover {
+    transform: translateY(-5px) scale(1.05);
+    border-color: var(--accent);
+}
+
+.cell.matched {
+    animation: matchEffect 0.6s ease-out;
+}
+
+@keyframes matchEffect {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.controls {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.message {
+    margin-top: 25px;
+    font-size: 1.3em;
+    font-weight: 400;
+    color: var(--text-light);
+    min-height: 30px;
+}
+
+.info-panel {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.game-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.lucky-numbers-display {
+    font-size: 1.2em;
+    color: var(--secondary);
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    .game-container-blingo {
+        padding: 20px;
+        width: 100%;
+    }
+
+    .grid-container {
+        gap: 8px;
+    }
+
+    .cell {
+        width: 60px;
+        height: 60px;
+        font-size: 1.8em;
+    }
+}

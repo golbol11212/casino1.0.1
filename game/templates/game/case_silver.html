@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="main-wrapper theme-silver">
+<div class="main-wrapper theme-silver" data-case-type="silver" data-case-cost="500.00">
     <nav class="case-nav">
         <a href="{% url 'case_bronze' %}">Bronze Case</a>
         <a href="{% url 'case_silver' %}" class="active">Silver Case</a>
@@ -17,11 +17,14 @@
     <div id="cases-area">
         <!-- Сюда будут добавляться рулетки через JS -->
     </div>
+    <div class="balance-info">
+        <p>Основной баланс: <span id="main-balance">0.00</span></p>
+    </div>
     <div class="controls-container">
         <label for="case-amount">Количество:</label>
         <input type="number" id="case-amount" value="1" min="1" max="10">
     </div>
-    <button id="open-case-btn">Открыть кейс (500 очков)</button>
+    <button id="open-case-btn">Открыть кейс</button>
     <div id="total-winnings-text"></div>
 </div>
 {% endblock %}

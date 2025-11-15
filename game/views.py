@@ -25,6 +25,89 @@ def case_bronze(request):
 def case_gold(request):
     return render(request, 'game/case_gold.html')
 
+@csrf_exempt
+@login_required
+def open_case(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            case_type = data.get('case_type')
+            amount = data.get('amount', 1)
+            user = request.user
+            individual_winnings = []
+            case_cost = Decimal('0.00')
+            winnings_range = (0.0, 0.0)
+
+            print(f"Received data: {data}") # Отладочный вывод
+            print(f"Received case_type: {case_type}") # Отладочный вывод
+
+            if case_type == 'bronze':
+                case_cost = Decimal('100.00')
+                winnings_range = (10.0, 250.0) # Обновленный диапазон для бронзового кейса
+            elif case_type == 'silver':
+                case_cost = Decimal('500.00')
+                winnings_range = (50.0, 1250.0) # Обновленный диапазон для серебряного кейса
+            elif case_type == 'gold':
+                case_cost = Decimal('2000.00')
+                winnings_range = (100.0, 5000.0) # Обновленный диапазон для золотого кейса
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Невідомий тип кейса.'}, status=400)
+
+            total_cost = case_cost * amount
+
+            if user.balance < total_cost:
+                return JsonResponse({'status': 'error', 'message': 'Недостатньо коштів на основному балансі.'}, status=400)
+
+            # Создаем GameClick перед изменением баланса
+            game_click = GameClick.objects.create(
+                user=user,
+                game_name=f'case_{case_type}',
+                target_url=request.path,
+                current_balance=user.balance
+            )
+
+            user.balance -= total_cost
+            
+            total_winnings = Decimal('0.00')
+            for _ in range(amount):
+                win_amount = Decimal(str(random.uniform(winnings_range[0], winnings_range[1])))
+                individual_winnings.append(float(win_amount))
+                total_winnings += win_amount
+                
+                # Создаем GameAttempt для каждого открытого кейса
+                GameAttempt.objects.create(
+                    user=user,
+                    game_name=f'case_{case_type}',
+                    attempts_count=1,
+                    game_score=win_amount,
+                    result='win' if win_amount > case_cost else 'lose' # Можно уточнить логику win/lose
+                )
+
+            user.balance += total_winnings
+            user.save()
+
+            # Обновляем GameClick после всех изменений баланса
+            game_click.new_balance = user.balance
+            game_click.save()
+
+            # Обновляем баланс в сессии
+            request.session['balance'] = float(user.balance)
+            request.session.modified = True
+
+            return JsonResponse({
+                'status': 'success',
+                'individual_winnings': individual_winnings,
+                'total_winnings': float(total_winnings),
+                'new_main_balance': float(user.balance),
+            })
+
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Недійсний JSON.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Дозволено лише POST запити.'}, status=405)
+
+
 def craps(request):
     return render(request, 'game/craps.html')
 
@@ -515,6 +598,3 @@ def update_roulette_balance(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     
     return JsonResponse({'status': 'error', 'message': 'Only POST requests are allowed'}, status=405)
-
-
-

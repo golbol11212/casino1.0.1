@@ -45,3 +45,12 @@ def get_user_balance(request):
     if request.user.is_authenticated:
         return JsonResponse({'balance': float(request.user.balance)})
     return JsonResponse({'balance': 0.0}) # Возвращаем 0, если пользователь не аутентифицирован
+
+@login_required
+def get_balances(request):
+    if request.user.is_authenticated:
+        user = request.user
+        return JsonResponse({
+            'main_balance': float(user.balance),
+        })
+    return JsonResponse({'status': 'error', 'message': 'Пользователь не аутентифицирован.'}, status=401)
