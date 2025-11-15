@@ -246,6 +246,93 @@ def roll_craps_dice(request):
 def fortune(request):
     return render(request, 'game/fortune.html')
 
+@csrf_exempt
+@login_required
+def spin_fortune(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            bet_amount = Decimal(str(data.get('bet_amount', 0)))
+            game_click_id = data.get('game_click_id')
+            user = request.user
+
+            if bet_amount <= 0:
+                return JsonResponse({'status': 'error', 'message': 'Сумма ставки должна быть больше нуля.'}, status=400)
+            if user.balance < bet_amount:
+                return JsonResponse({'status': 'error', 'message': 'Недостаточно средств на основном балансе.'}, status=400)
+
+            # Если это первый спин в раунде, создаем GameClick
+            if not game_click_id:
+                game_click = GameClick.objects.create(
+                    user=user,
+                    game_name='fortune',
+                    target_url=request.path,
+                    current_balance=user.balance
+                )
+                game_click_id = game_click.id
+            else:
+                try:
+                    game_click = GameClick.objects.get(id=game_click_id, user=user)
+                except GameClick.DoesNotExist:
+                    return JsonResponse({'status': 'error', 'message': 'GameClick не найден.'}, status=400)
+
+            user.balance -= bet_amount
+            
+            symbols = ['🍒', '🍋', '🍊', '🍇', '🍉', '🔔', '⭐']
+            payouts = {
+                '🍒': 2, '🍋': 2, '🍊': 2,
+                '🍇': 5, '🍉': 5, '🔔': 10,
+                '⭐': 50
+            }
+
+            s1 = random.choice(symbols)
+            s2 = random.choice(symbols)
+            s3 = random.choice(symbols)
+
+            message = 'Попробуйте еще раз!'
+            win_amount = Decimal('0.00')
+            game_status = 'lose'
+
+            if s1 == s2 and s2 == s3:
+                win_multiplier = payouts[s1]
+                win_amount = bet_amount * Decimal(str(win_multiplier))
+                user.balance += win_amount
+                message = f'Вы выиграли {win_amount.toFixed(2)}!'
+                game_status = 'win'
+            
+            user.save()
+            request.session['balance'] = float(user.balance)
+            request.session['fortune_game_click_id'] = game_click_id # Обновляем ID в сессии
+            request.session.modified = True
+
+            # Обновляем GameClick
+            game_click.new_balance = user.balance
+            game_click.save()
+
+            # Создаем GameAttempt
+            GameAttempt.objects.create(
+                user=user,
+                game_name='fortune',
+                attempts_count=1,
+                game_score=win_amount,
+                result=game_status
+            )
+
+            return JsonResponse({
+                'status': game_status,
+                'symbols': [s1, s2, s3],
+                'message': message,
+                'new_balance': float(user.balance),
+                'game_click_id': game_click_id # Возвращаем game_click_id
+            })
+
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Недійсний JSON.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Дозволено лише POST запити.'}, status=405)
+
+
 def punto_banco(request):
     return render(request, 'game/punto_banco.html')
 
