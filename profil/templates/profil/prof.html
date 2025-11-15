@@ -49,9 +49,9 @@
                             <tr>
                                 <td>{{ game.timestamp|date:"d.m.Y H:i" }}</td>
                                 <td>{{ game.game_name }}</td>
-                                <td>{{ game.current_balance }}</td>
-                                <td>{{ game.new_balance }}</td>
-                                <td>{{ game.total }}</td>
+                                <td>{{ game.current_balance|floatformat:2 }}</td>
+                                <td>{{ game.new_balance|floatformat:2 }}</td>
+                                <td>{{ game.total|floatformat:2 }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
