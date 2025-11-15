@@ -111,6 +111,138 @@ def open_case(request):
 def craps(request):
     return render(request, 'game/craps.html')
 
+@csrf_exempt
+@login_required
+def place_craps_bet(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            bet_amount = Decimal(str(data.get('bet_amount', 0)))
+            user = request.user
+
+            if bet_amount <= 0:
+                return JsonResponse({'status': 'error', 'message': 'Сумма ставки должна быть больше нуля.'}, status=400)
+            if user.balance < bet_amount:
+                return JsonResponse({'status': 'error', 'message': 'Недостаточно средств на основном балансе.'}, status=400)
+
+            # Создаем GameClick перед изменением баланса
+            game_click = GameClick.objects.create(
+                user=user,
+                game_name='craps',
+                target_url=request.path,
+                current_balance=user.balance
+            )
+
+            user.balance -= bet_amount
+            user.save()
+
+            request.session['balance'] = float(user.balance)
+            request.session['craps_game_click_id'] = game_click.id
+            request.session.modified = True
+
+            return JsonResponse({
+                'status': 'success',
+                'new_balance': float(user.balance),
+                'game_click_id': game_click.id
+            })
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Недійсний JSON.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+            return JsonResponse({'status': 'error', 'message': 'Дозволено лише POST запити.'}, status=405)
+
+@csrf_exempt
+@login_required
+def roll_craps_dice(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            game_click_id = data.get('game_click_id')
+            current_point = data.get('point')
+            is_come_out_roll = data.get('is_come_out_roll', True)
+            current_bet = Decimal(str(data.get('current_bet', 0)))
+            user = request.user
+
+            if not game_click_id:
+                return JsonResponse({'status': 'error', 'message': 'Неверный ID GameClick.'}, status=400)
+            
+            try:
+                game_click = GameClick.objects.get(id=game_click_id, user=user)
+            except GameClick.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'GameClick не найден.'}, status=400)
+
+            d1 = random.randint(1, 6)
+            d2 = random.randint(1, 6)
+            roll_sum = d1 + d2
+
+            message = f'Вы выбросили: {roll_sum}.'
+            game_status = 'continue' # continue, new_round_win, new_round_lose
+            new_point = current_point
+            winnings = Decimal('0.00')
+            
+            if is_come_out_roll:
+                if roll_sum == 7 or roll_sum == 11:
+                    message += ' Pass Line выигрывает! Новый раунд начинается.'
+                    game_status = 'new_round_win'
+                    winnings = current_bet * 2
+                    user.balance += winnings
+                elif roll_sum == 2 or roll_sum == 3 or roll_sum == 12:
+                    message += ' Craps! Pass Line проигрывает. Новый раунд начинается.'
+                    game_status = 'new_round_lose'
+                else:
+                    new_point = roll_sum
+                    is_come_out_roll = False
+                    message += f' Point установлен на {new_point}. Выбросите {new_point} снова до 7.'
+            else: # Point roll
+                if roll_sum == current_point:
+                    message += f' Вы выбросили Point ({current_point})! Pass Line выигрывает! Новый раунд начинается.'
+                    game_status = 'new_round_win'
+                    winnings = current_bet * 2
+                    user.balance += winnings
+                elif roll_sum == 7:
+                    message += ' Вы выбросили 7. Pass Line проигрывает. Новый раунд начинается.'
+                    game_status = 'new_round_lose'
+                else:
+                    message += f' Продолжайте бросать. Вам нужно {current_point}.'
+            
+            user.save()
+            request.session['balance'] = float(user.balance)
+            request.session.modified = True
+
+            # Обновляем GameClick
+            if game_status != 'continue':
+                game_click.new_balance = user.balance
+                game_click.save()
+                del request.session['craps_game_click_id'] # Очищаем ID после завершения раунда
+                request.session.modified = True
+
+            # Создаем GameAttempt
+            GameAttempt.objects.create(
+                user=user,
+                game_name='craps',
+                attempts_count=1,
+                game_score=winnings,
+                result='win' if winnings > 0 else ('lose' if game_status == 'new_round_lose' else 'continue')
+            )
+
+            return JsonResponse({
+                'status': 'success',
+                'dice_roll': [d1, d2],
+                'roll_sum': roll_sum,
+                'message': message,
+                'game_status': game_status,
+                'point': new_point,
+                'is_come_out_roll': is_come_out_roll,
+                'new_balance': float(user.balance)
+            })
+
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Недійсний JSON.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Дозволено лише POST запити.'}, status=405)
+
+
 def fortune(request):
     return render(request, 'game/fortune.html')
 

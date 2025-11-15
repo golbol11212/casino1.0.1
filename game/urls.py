@@ -18,6 +18,8 @@ urlpatterns = [
     path('blingo/', views.blingo, name='blingo'), # Blingo (поиск чисел)
     path('blinko/', views.blinko, name='blinko'), # Plinko
     path('update_redirect/', views.update_redirect, name='update_redirect'), # update_redirect для Blingo (поиск чисел) и других игр
+    path('craps/place_bet/', views.place_craps_bet, name='place_craps_bet'),
+    path('craps/roll_dice/', views.roll_craps_dice, name='roll_craps_dice'),
     
     # URL-ы для Blingo (поиск чисел)
     path('check_blingo_attempts/', views.check_blingo_attempts, name='check_blingo_attempts'),
