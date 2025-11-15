@@ -336,10 +336,213 @@ def spin_fortune(request):
 def punto_banco(request):
     return render(request, 'game/punto_banco.html')
 
+@csrf_exempt
+@login_required
+def place_punto_banco_bet(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            bet_amount = Decimal(str(data.get('bet_amount', 0)))
+            bet_type = data.get('bet_type')
+            user = request.user
+
+            if bet_amount <= 0:
+                return JsonResponse({'status': 'error', 'message': 'Сумма ставки должна быть больше нуля.'}, status=400)
+            if user.balance < bet_amount:
+                return JsonResponse({'status': 'error', 'message': 'Недостаточно средств на основном балансе.'}, status=400)
+            if bet_type not in ['player', 'banker', 'tie']:
+                return JsonResponse({'status': 'error', 'message': 'Неверный тип ставки.'}, status=400)
+
+            game_click = GameClick.objects.create(
+                user=user,
+                game_name='punto_banco',
+                target_url=request.path,
+                current_balance=user.balance
+            )
+
+            user.balance -= bet_amount
+            user.save()
+
+            request.session['balance'] = float(user.balance)
+            request.session['punto_banco_game_click_id'] = game_click.id
+            request.session.modified = True
+
+            return JsonResponse({
+                'status': 'success',
+                'new_balance': float(user.balance),
+                'game_click_id': game_click.id
+            })
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Недійсний JSON.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Дозволено лише POST запити.'}, status=405)
+
 
 def Blackjack(request):
     # GameClick создается функцией track_game_click при переходе на эту страницу
     return render(request, 'game/Blackjack.html')
+
+@csrf_exempt
+@login_required
+def deal_punto_banco(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            game_click_id = data.get('game_click_id')
+            bet_type = data.get('bet_type')
+            bet_amount = Decimal(str(data.get('bet_amount', 0)))
+            user = request.user
+
+            if not game_click_id:
+                return JsonResponse({'status': 'error', 'message': 'Неверный ID GameClick.'}, status=400)
+            
+            try:
+                game_click = GameClick.objects.get(id=game_click_id, user=user)
+            except GameClick.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'GameClick не найден.'}, status=400)
+
+            # Game Logic for Punto Banco
+            ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+            suits = ['♥', '♦', '♣', '♠']
+            deck = []
+            for _ in range(6): # 6 decks
+                for suit in suits:
+                    for rank in ranks:
+                        deck.append({'rank': rank, 'suit': suit})
+            random.shuffle(deck)
+
+            def get_card_value(card):
+                if card['rank'] in ['10', 'J', 'Q', 'K']: return 0
+                if card['rank'] == 'A': return 1
+                return int(card['rank'])
+
+            def calculate_hand_value(hand):
+                return sum(get_card_value(card) for card in hand) % 10
+
+            player_hand = [deck.pop(), deck.pop()]
+            banker_hand = [deck.pop(), deck.pop()]
+
+            player_score = calculate_hand_value(player_hand)
+            banker_score = calculate_hand_value(banker_hand)
+
+            # Natural win check
+            if player_score >= 8 or banker_score >= 8:
+                pass # Go directly to endgame
+            else:
+                player_drew_card = None
+                # Player's third card rule
+                if player_score <= 5:
+                    player_card = deck.pop()
+                    player_hand.append(player_card)
+                    player_drew_card = get_card_value(player_card)
+                    player_score = calculate_hand_value(player_hand) # Recalculate after drawing
+                
+                # Banker's third card rule
+                banker_draw = False
+                if player_drew_card is None: # Player did not draw a third card
+                    if banker_score <= 5:
+                        banker_draw = True
+                else: # Player drew a third card
+                    if banker_score <= 2:
+                        banker_draw = True
+                    elif banker_score == 3 and player_drew_card != 8:
+                        banker_draw = True
+                    elif banker_score == 4 and player_drew_card in [2, 3, 4, 5, 6, 7]:
+                        banker_draw = True
+                    elif banker_score == 5 and player_drew_card in [4, 5, 6, 7]:
+                        banker_draw = True
+                    elif banker_score == 6 and player_drew_card in [6, 7]:
+                        banker_draw = True
+                
+                if banker_draw:
+                    banker_hand.append(deck.pop())
+                    banker_score = calculate_hand_value(banker_hand) # Recalculate after drawing
+
+            message = ""
+            win_amount = Decimal('0.00')
+            game_status = 'lose'
+            winner = ''
+
+            if player_score > banker_score:
+                winner = 'player'
+            elif banker_score > player_score:
+                winner = 'banker'
+            else:
+                winner = 'tie'
+
+            if winner == bet_type:
+                if winner == 'player':
+                    win_amount = bet_amount * 2
+                    message = f'Player wins! You receive {win_amount:.2f}.'
+                elif winner == 'banker':
+                    win_amount = bet_amount * Decimal('2') * Decimal('0.95') # 5% commission
+                    message = f'Banker wins! You receive {win_amount:.2f} (after 5% commission). '
+                else: # Tie
+                    win_amount = bet_amount * 9 # 8 to 1 payout
+                    message = f'It\'s a Tie! You receive {win_amount:.2f}.'
+                user.balance += win_amount
+                game_status = 'win'
+            else:
+                message = f'You lost. The winner was: {winner}.'
+            
+            user.save()
+            request.session['balance'] = float(user.balance)
+            request.session.modified = True
+
+            game_click.new_balance = user.balance
+            game_click.save()
+
+            GameAttempt.objects.create(
+                user=user,
+                game_name='punto_banco',
+                attempts_count=1,
+                game_score=win_amount,
+                result=game_status
+            )
+
+            return JsonResponse({
+                'status': 'success',
+                'player_hand': player_hand,
+                'banker_hand': banker_hand,
+                'player_score': player_score,
+                'banker_score': banker_score,
+                'message': message,
+                'new_balance': float(user.balance),
+                'winner': winner
+            })
+            
+            user.save()
+            request.session['balance'] = float(user.balance)
+            request.session.modified = True
+
+            game_click.new_balance = user.balance
+            game_click.save()
+
+            GameAttempt.objects.create(
+                user=user,
+                game_name='punto_banco',
+                attempts_count=1,
+                game_score=win_amount,
+                result=game_status
+            )
+
+            return JsonResponse({
+                'status': 'success',
+                'player_hand': player_hand_symbols,
+                'banker_hand': banker_hand_symbols,
+                'player_score': player_score,
+                'banker_score': banker_score,
+                'message': message,
+                'new_balance': float(user.balance),
+                'winner': winner
+            })
+
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Недійсний JSON.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Дозволено лише POST запити.'}, status=405)
 
 def roulette(request):
     # GameClick создается функцией track_game_click при переходе на эту страницу

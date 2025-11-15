@@ -12,43 +12,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageEl = document.getElementById('message');
 
     // Game State
-    let balance = 1000;
+    let currentBalance = 0;
     let currentBet = null; // { type: 'player' | 'banker' | 'tie', amount: number }
-    let deck = [];
-    let playerHand = [];
-    let bankerHand = [];
+    let gameClickId = null; // Для отслеживания GameClick
 
-    // --- Game Logic Functions ---
-
-    function createDeck(numDecks = 6) {
-        const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-        const suits = ['♥', '♦', '♣', '♠'];
-        let newDeck = [];
-        for (let i = 0; i < numDecks; i++) {
-            for (const suit of suits) {
-                for (const rank of ranks) {
-                    newDeck.push({ rank, suit });
+    // --- Helper Functions ---
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
         }
-        return newDeck;
+        return cookieValue;
     }
 
-    function shuffleDeck() {
-        for (let i = deck.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [deck[i], deck[j]] = [deck[j], deck[i]];
+    async function fetchBalance() {
+        try {
+            const response = await fetch('/accounts/get_balances/');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            currentBalance = data.main_balance;
+            updateBalanceDisplay();
+        } catch (error) {
+            console.error('Ошибка при получении баланса:', error);
+            messageEl.textContent = "Не удалось загрузить баланс.";
         }
     }
 
-    function getCardValue(card) {
-        if (['10', 'J', 'Q', 'K'].includes(card.rank)) return 0;
-        if (card.rank === 'A') return 1;
-        return parseInt(card.rank);
-    }
-
-    function calculateHandValue(hand) {
-        return hand.reduce((sum, card) => sum + getCardValue(card), 0) % 10;
+    function updateBalanceDisplay() {
+        balanceEl.textContent = currentBalance.toFixed(2);
     }
 
     function renderHand(hand, element, faceUp = false) {
@@ -81,12 +81,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function updateScores() {
+    function updateScores(playerScore, bankerScore) {
         const playerParent = playerScoreEl.parentElement;
         const bankerParent = bankerScoreEl.parentElement;
 
-        playerScoreEl.textContent = calculateHandValue(playerHand);
-        bankerScoreEl.textContent = calculateHandValue(bankerHand);
+        playerScoreEl.textContent = playerScore;
+        bankerScoreEl.textContent = bankerScore;
 
         // Trigger animation
         playerParent.classList.add('score-update');
@@ -99,139 +99,103 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     }
     
-    function placeBet(betType) {
+    async function placeBet(betType) {
         const amount = parseInt(betAmountEl.value);
         if (isNaN(amount) || amount <= 0) {
             messageEl.textContent = "Please enter a valid bet amount.";
             return;
         }
-        if (amount > balance) {
+        if (amount > currentBalance) {
             messageEl.textContent = "Not enough funds for this bet.";
             return;
         }
 
-        currentBet = { type: betType, amount: amount };
-        balance -= amount;
-        balanceEl.textContent = balance;
-        messageEl.textContent = `You bet ${amount} on ${betType}. Click "Deal".`;
-        
-        // Deal cards face down
-        playerHand = [deck.pop(), deck.pop()];
-        bankerHand = [deck.pop(), deck.pop()];
-        renderHand(playerHand, playerHandEl, false);
-        renderHand(bankerHand, bankerHandEl, false);
-        
-        betBtns.forEach(btn => btn.disabled = true);
-        betAmountEl.disabled = true;
-        dealBtn.disabled = false;
+        try {
+            const response = await fetch('/game/punto_banco/place_bet/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ bet_amount: amount, bet_type: betType })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            currentBalance = data.new_balance;
+            gameClickId = data.game_click_id;
+            currentBet = { type: betType, amount: amount };
+            updateBalanceDisplay();
+            messageEl.textContent = `You bet ${amount} on ${betType}. Click "Deal".`;
+            
+            betBtns.forEach(btn => btn.disabled = true);
+            betAmountEl.disabled = true;
+            dealBtn.disabled = false;
+
+        } catch (error) {
+            console.error('Ошибка при размещении ставки:', error);
+            messageEl.textContent = `Ошибка: ${error.message}`;
+        }
     }
 
-    function dealCards() {
+    async function dealCards() {
         dealBtn.disabled = true;
         messageEl.textContent = "Flipping cards...";
 
-        // Flip the cards
-        const allCards = document.querySelectorAll('.card');
-        allCards.forEach((card, index) => {
+        try {
+            const response = await fetch('/game/punto_banco/deal/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ game_click_id: gameClickId, bet_type: currentBet.type, bet_amount: currentBet.amount })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            currentBalance = data.new_balance;
+            updateBalanceDisplay();
+
+            // Render initial hands face down
+            renderHand(data.player_hand.slice(0, 2), playerHandEl, false);
+            renderHand(data.banker_hand.slice(0, 2), bankerHandEl, false);
+
+            // Flip the cards
+            const allCards = document.querySelectorAll('.card');
+            allCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('is-flipped');
+                }, index * 200);
+            });
+
+            // Wait for flip animation to finish before displaying full hands and scores
             setTimeout(() => {
-                card.classList.add('is-flipped');
-            }, index * 200);
-        });
+                renderHand(data.player_hand, playerHandEl, true);
+                renderHand(data.banker_hand, bankerHandEl, true);
+                updateScores(data.player_score, data.banker_score);
+                messageEl.textContent = data.message;
+                resetBtn.style.display = 'inline-block';
+            }, 2000); // Adjust delay as needed for animation
 
-        // Wait for flip animation to finish before evaluating
-        setTimeout(evaluateGame, 2000);
-    }
-
-    function evaluateGame() {
-        updateScores(); // Display initial scores after flip
-        let playerScore = calculateHandValue(playerHand);
-        let bankerScore = calculateHandValue(bankerHand);
-
-        // Natural win check
-        if (playerScore >= 8 || bankerScore >= 8) {
-            setTimeout(endGame, 1000);
-            return;
+        } catch (error) {
+            console.error('Ошибка при раздаче карт:', error);
+            messageEl.textContent = `Ошибка: ${error.message}`;
+            resetBtn.style.display = 'inline-block';
         }
-
-        let playerDrew = false;
-        // Player's third card rule
-        if (playerScore <= 5) {
-            playerHand.push(deck.pop());
-            renderHand(playerHand, playerHandEl, true); // Render face up
-            updateScores();
-            playerDrew = true;
-        }
-
-        // Banker's third card rule
-        const playerThirdCardValue = playerDrew ? getCardValue(playerHand[2]) : null;
-        bankerScore = calculateHandValue(bankerHand); // Recalculate before decision
-
-        let bankerShouldDraw = false;
-        if (!playerDrew) {
-            if (bankerScore <= 5) {
-                bankerShouldDraw = true;
-            }
-        } else {
-            if (bankerScore <= 2) {
-                bankerShouldDraw = true;
-            } else if (bankerScore === 3 && playerThirdCardValue !== 8) {
-                bankerShouldDraw = true;
-            } else if (bankerScore === 4 && [2, 3, 4, 5, 6, 7].includes(playerThirdCardValue)) {
-                bankerShouldDraw = true;
-            } else if (bankerScore === 5 && [4, 5, 6, 7].includes(playerThirdCardValue)) {
-                bankerShouldDraw = true;
-            } else if (bankerScore === 6 && [6, 7].includes(playerThirdCardValue)) {
-                bankerShouldDraw = true;
-            }
-        }
-
-        if (bankerShouldDraw) {
-            bankerHand.push(deck.pop());
-            renderHand(bankerHand, bankerHandEl, true); // Render face up
-            updateScores();
-        }
-
-        setTimeout(endGame, 1000); // Delay before showing result
-    }
-
-    function endGame() {
-        const playerScore = calculateHandValue(playerHand);
-        const bankerScore = calculateHandValue(bankerHand);
-        let winner = null;
-
-        if (playerScore > bankerScore) {
-            winner = 'player';
-        } else if (bankerScore > playerScore) {
-            winner = 'banker';
-        } else {
-            winner = 'tie';
-        }
-
-        let payout = 0;
-        if (winner === currentBet.type) {
-            if (winner === 'player') {
-                payout = currentBet.amount * 2;
-                messageEl.textContent = `Player wins! You receive ${payout}.`;
-            } else if (winner === 'banker') {
-                payout = currentBet.amount * 2 * 0.95; // 5% commission
-                messageEl.textContent = `Banker wins! You receive ${payout.toFixed(2)} (after 5% commission).`;
-            } else { // Tie
-                payout = currentBet.amount * 9; // 8 to 1 payout
-                messageEl.textContent = `It's a Tie! You receive ${payout}.`;
-            }
-            balance += payout;
-        } else {
-            messageEl.textContent = `You lost. The winner was: ${winner}.`;
-        }
-        
-        balanceEl.textContent = balance.toFixed(2);
-        resetBtn.style.display = 'inline-block';
     }
     
     function resetGame() {
         currentBet = null;
-        playerHand = [];
-        bankerHand = [];
+        gameClickId = null;
         
         playerHandEl.innerHTML = '';
         bankerHandEl.innerHTML = '';
@@ -244,11 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resetBtn.style.display = 'none';
         dealBtn.disabled = true;
 
-        if (deck.length < 20) { // Reshuffle if deck is low
-            deck = createDeck();
-            shuffleDeck();
-            messageEl.textContent += ' Deck has been reshuffled.';
-        }
+        fetchBalance(); // Обновляем баланс после сброса
     }
 
     // --- Event Listeners ---
@@ -261,9 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initial Game Setup ---
     function init() {
-        balanceEl.textContent = balance;
-        deck = createDeck();
-        shuffleDeck();
+        fetchBalance(); // Инициализация баланса при загрузке страницы
     }
 
     init();

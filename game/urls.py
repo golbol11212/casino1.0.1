@@ -21,6 +21,8 @@ urlpatterns = [
     path('craps/place_bet/', views.place_craps_bet, name='place_craps_bet'),
     path('craps/roll_dice/', views.roll_craps_dice, name='roll_craps_dice'),
     path('fortune/spin/', views.spin_fortune, name='spin_fortune'),
+    path('punto_banco/place_bet/', views.place_punto_banco_bet, name='place_punto_banco_bet'),
+    path('punto_banco/deal/', views.deal_punto_banco, name='deal_punto_banco'),
     
     # URL-ы для Blingo (поиск чисел)
     path('check_blingo_attempts/', views.check_blingo_attempts, name='check_blingo_attempts'),
