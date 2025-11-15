@@ -70,7 +70,7 @@
 
         <div class="game-card">
             <div class="game-image">
-                <img src="{% static 'img/case.jpg' %}" alt="Case Opening">
+                <img src="{% static 'img/case_image.png' %}" alt="Case Opening">
             </div>
             <div class="game-info">
                 <h3 class="game-name">Case Opening</h3>
@@ -78,7 +78,7 @@
                 <form action="{% url 'track-game-click' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="game_name" value="case_opening">
-                    <input type="hidden" name="target_url" value="{% url 'case_silver' %}">
+                    <input type="hidden" name="target_url" value="{% url 'case_bronze' %}"> {# Изменено на case_bronze #}
                     <button type="submit" class="btn btn-primary">Play Now</button>
                 </form>
             </div>
@@ -86,7 +86,7 @@
 
         <div class="game-card">
             <div class="game-image">
-                <img src="{% static 'img/craps.jpg' %}" alt="Craps">
+                <img src="{% static 'img/Craps.png' %}" alt="Craps">
             </div>
             <div class="game-info">
                 <h3 class="game-name">Craps</h3>
@@ -102,7 +102,7 @@
 
         <div class="game-card">
             <div class="game-image">
-                <img src="{% static 'img/fortune.jpg' %}" alt="Fortune">
+                <img src="{% static 'img/fortune.png' %}" alt="Fortune">
             </div>
             <div class="game-info">
                 <h3 class="game-name">Fortune</h3>
@@ -118,7 +118,7 @@
 
         <div class="game-card">
             <div class="game-image">
-                <img src="{% static 'img/punto_banco.jpg' %}" alt="Punto Banco">
+                <img src="{% static 'img/punto.png' %}" alt="Punto Banco">
             </div>
             <div class="game-info">
                 <h3 class="game-name">Punto Banco</h3>
